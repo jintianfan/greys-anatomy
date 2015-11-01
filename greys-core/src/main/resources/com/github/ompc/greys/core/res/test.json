@@ -1,0 +1,7 @@
+{"id": 0, "type": "search-class", "body": {"classes-matching": [{"modifier": 3583, "type": 511, "class-name-matching": {"pattern": "com.alibaba.*", "type": 0}, "is-include-sub-classes": false}]}}
+
+{"id": 0, "type": "get-version", "body": {}}
+
+{"id": 1, "type": "echo", "body": {"words":"dukun"}}
+
+{"id": 2, "type": "terminate", "body": {"target-id":1}}
