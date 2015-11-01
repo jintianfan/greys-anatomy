@@ -13,20 +13,48 @@ import static com.github.ompc.greys.core.util.GaReflectUtils.computeMethodModifi
 public class MethodMatcher extends ReflectMatcher<Method> {
 
     // 方法参数匹配(顺序相关)
-    private final Matcher<Class<?>> parameterArray[];
+    private final Matcher<Class<?>> parameterClassMatchers[];
 
     public MethodMatcher(
             int modifier,
             Matcher<String> name,
-            Matcher<Class<?>>[] parameterArray,
+            Matcher<Class<?>>[] parameterClassMatchers,
             Collection<Matcher<Class<? extends Annotation>>> annotations) {
         super(modifier, name, annotations);
-        this.parameterArray = parameterArray;
+        this.parameterClassMatchers = parameterClassMatchers;
     }
 
     @Override
-    boolean reflectMatching(Method target) {
-        return false;
+    boolean reflectMatching(Method targetMethod) {
+        if (!matchingParameters(targetMethod)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean matchingParameters(final Method targetMethod) {
+
+        final Class<?>[] targetParameterClassArray = targetMethod.getParameterTypes();
+
+        // 推空保护
+        if (null == parameterClassMatchers
+                || null == targetParameterClassArray) {
+            return true;
+        }
+
+
+        if (targetParameterClassArray.length != parameterClassMatchers.length) {
+            return false;
+        }
+
+        final int length = targetParameterClassArray.length;
+        for (int index = 0; index < length; index++) {
+            final Matcher<Class<?>> classMatcher = parameterClassMatchers[index];
+            if (!classMatcher.matching(targetParameterClassArray[index])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
