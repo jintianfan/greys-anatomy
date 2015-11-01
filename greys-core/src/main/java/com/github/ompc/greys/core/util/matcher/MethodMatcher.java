@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
+import static com.github.ompc.greys.core.util.GaReflectUtils.computeMethodModifier;
+
 /**
  * 方法匹配
  * Created by vlinux on 15/11/1.
@@ -29,7 +31,7 @@ public class MethodMatcher extends ReflectMatcher<Method> {
 
     @Override
     int getTargetModifiers(Method target) {
-        return target.getModifiers();
+        return computeMethodModifier(target);
     }
 
     @Override

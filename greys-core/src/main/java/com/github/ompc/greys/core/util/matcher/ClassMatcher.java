@@ -3,8 +3,7 @@ package com.github.ompc.greys.core.util.matcher;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 
-import static com.github.ompc.greys.core.util.GaReflectUtils.DEFAULT_TYPE;
-import static com.github.ompc.greys.core.util.GaReflectUtils.computeClassType;
+import static com.github.ompc.greys.core.util.GaReflectUtils.*;
 
 /**
  * 类匹配
@@ -50,7 +49,7 @@ public class ClassMatcher extends ReflectMatcher<Class<?>> {
 
     @Override
     int getTargetModifiers(Class<?> target) {
-        return target.getModifiers();
+        return computeClassModifier(target);
     }
 
     @Override
