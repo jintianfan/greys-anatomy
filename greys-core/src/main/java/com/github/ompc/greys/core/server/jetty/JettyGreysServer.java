@@ -12,6 +12,9 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.eclipse.jetty.servlet.ServletContextHandler.SESSIONS;
@@ -45,7 +48,17 @@ public class JettyGreysServer implements Server {
      */
     private void init(final Instrumentation inst) {
         HandlerMetaDataManager.Factory.getInstance();
-        ReflectManager.Factory.initInstance(inst);
+        ReflectManager.Factory.initInstance(new ReflectManager.ClassDataSource() {
+
+            @Override
+            public Collection<Class<?>> allLoadedClasses() {
+                final Class<?>[] classArray = inst.getAllLoadedClasses();
+                return null == classArray
+                        ? new ArrayList<Class<?>>()
+                        : Arrays.asList(classArray);
+            }
+
+        });
     }
 
     @Override
