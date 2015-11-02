@@ -15,22 +15,6 @@ public class PatternMatching {
     // 模式类型
     private int type;
 
-    public String getPattern() {
-        return pattern;
-    }
-
-    public void setPattern(String pattern) {
-        this.pattern = pattern;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
     /**
      * 转换为匹配器
      *

@@ -2,12 +2,61 @@ package com.github.ompc.greys.core.util;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 
 /**
  * 反射工具类
  * Created by vlinux on 15/11/2.
  */
 public class GaReflectUtils {
+
+
+    /**
+     * 递归获取目标类的ClassLoader<br/>
+     * 因为JVM的ClassLoader采用双亲委派，所以按层次排序
+     *
+     * @param targetClass 目标类
+     * @return ClassLoader层次列表(按层次排序，从近到远)
+     */
+    public static ArrayList<ClassLoader> recGetClassLoader(final Class<?> targetClass) {
+        final ArrayList<ClassLoader> classLoaderList = new ArrayList<ClassLoader>();
+        ClassLoader loader = targetClass.getClassLoader();
+        if (null != loader) {
+            classLoaderList.add(loader);
+            while (true) {
+                loader = loader.getParent();
+                if (null == loader) {
+                    break;
+                }
+                classLoaderList.add(loader);
+            }
+        }
+        return classLoaderList;
+    }
+
+
+    /**
+     * 递归获取目标类的父类<br/>
+     * 因为Java的类继承关系是单父类的，所以按照层次排序
+     *
+     * @param targetClass 目标类
+     * @return SuperClass层次列表(按层次排序，从近到远)
+     */
+    public static ArrayList<Class<?>> recGetSuperClass(final Class<?> targetClass) {
+        final ArrayList<Class<?>> superClassList = new ArrayList<Class<?>>();
+        Class<?> superClass = targetClass.getSuperclass();
+        if (null != superClass) {
+            superClassList.add(superClass);
+            while (true) {
+                superClass = superClass.getSuperclass();
+                if (null == superClass) {
+                    break;
+                }
+                superClassList.add(superClass);
+            }//while
+        }
+        return superClassList;
+    }
 
     /**
      * 计算ClassType

@@ -9,7 +9,10 @@ import com.github.ompc.greys.core.listener.InvokeListener;
 import com.github.ompc.greys.core.manager.ReflectManager;
 import com.github.ompc.greys.core.server.Session;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * 搜索已加载类
@@ -35,51 +38,30 @@ public class SearchClass implements Handler<SearchClass.Req, SearchClass.Resp> {
     public LinkedHashMap<InvokeListener, ArrayList<PointCut>> handle(Req req, Out<Resp> out) throws Throwable {
 
         final Resp resp = new Resp();
-        resp.classInfos = search(req.classesMatching).toArray(new ClassInfo[0]);
+        resp.classInfos = toClassInfos(searchClasses(req.classesMatching, req), req);
         out.finish(resp);
 
         return null;
     }
 
-    private Set<ClassInfo> search(final ClassMatching[] classesMatching) {
+    private ClassInfo[] toClassInfos(final Set<Class<?>> classSet, final Req req) {
+
         final Set<ClassInfo> classInfoSet = new LinkedHashSet<ClassInfo>();
-        if (null == classesMatching) {
-            return classInfoSet;
+        for (Class<?> clazz : classSet) {
+            classInfoSet.add(new ClassInfo(
+                    clazz,
+                    req.isIncludeInterfaces,
+                    req.isIncludeAnnotations,
+                    req.isIncludeSuperClasses,
+                    req.isIncludeClassLoaders,
+                    req.isIncludeFields
+            ));
         }
 
-        // 搜索所有匹配器需求
-        for (final ClassMatching classMatching : classesMatching) {
-
-            final Set<Class<?>> classSet = new LinkedHashSet<Class<?>>();
-
-            // 搜索当前匹配器所匹配的类
-            final Set<Class<?>> matchedClassSet = reflectManager.searchClass(classMatching.toMatcher());
-            classSet.addAll(matchedClassSet);
-
-            // 如果要求搜索子类，则需要继续添加
-            if (classMatching.isIncludeSubClasses()) {
-                for (final Class<?> matchedClass : matchedClassSet) {
-                    classSet.addAll(reflectManager.searchSubClass(matchedClass));
-                }
-            }
-
-            for (Class<?> matchedClass : classSet) {
-                classInfoSet.add(new ClassInfo(
-                        matchedClass,
-                        classMatching.isIncludeInterfaces(),
-                        classMatching.isIncludeAnnotations(),
-                        classMatching.isIncludeSuperClasses(),
-                        classMatching.isIncludeClassLoaders(),
-                        classMatching.isIncludeFields()
-                ));
-            }
-
-        }
-
-        return classInfoSet;
+        return classInfoSet.toArray(new ClassInfo[0]);
     }
 
-    private Set<Class<?>> searchClasses(final ClassMatching[] classesMatching) {
+    private Set<Class<?>> searchClasses(final ClassMatching[] classesMatching, final Req req) {
         final Set<Class<?>> classSet = new LinkedHashSet<Class<?>>();
         if (null == classesMatching) {
             return classSet;
@@ -93,7 +75,7 @@ public class SearchClass implements Handler<SearchClass.Req, SearchClass.Resp> {
             classSet.addAll(matchedClassSet);
 
             // 如果要求搜索子类，则需要继续添加
-            if (classMatching.isIncludeSubClasses()) {
+            if (req.isIncludeSubClasses) {
                 for (final Class<?> matchedClass : matchedClassSet) {
                     classSet.addAll(reflectManager.searchSubClass(matchedClass));
                 }
@@ -108,6 +90,24 @@ public class SearchClass implements Handler<SearchClass.Req, SearchClass.Resp> {
 
         // 类匹配集合
         private ClassMatching[] classesMatching;
+
+        // 是否包含子类
+        private boolean isIncludeSubClasses;
+
+        // 是否包含属性
+        private boolean isIncludeFields;
+
+        // 是否包含ClassLoader
+        private boolean isIncludeClassLoaders;
+
+        // 是否包含接口
+        private boolean isIncludeInterfaces;
+
+        // 是否包含父类
+        private boolean isIncludeSuperClasses;
+
+        // 是否包含Annotation
+        private boolean isIncludeAnnotations;
 
     }
 

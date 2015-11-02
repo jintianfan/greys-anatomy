@@ -1,8 +1,9 @@
 package com.github.ompc.greys.core.handler.info;
 
+import com.github.ompc.greys.core.util.GaReflectUtils;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,18 +73,7 @@ public class ClassInfo extends TypeInfo {
     }
 
     private TypeInfo[] toSuperClassClassInfo(final Class<?> clazz) {
-        final List<Class<?>> superClassList = new ArrayList<Class<?>>();
-        Class<?> superClass = clazz.getSuperclass();
-        if (null != superClass) {
-            superClassList.add(superClass);
-            while (true) {
-                superClass = superClass.getSuperclass();
-                if (null == superClass) {
-                    break;
-                }
-                superClassList.add(superClass);
-            }//while
-        }
+        final List<Class<?>> superClassList = GaReflectUtils.recGetSuperClass(clazz);
         final int length = superClassList.size();
         final TypeInfo[] superClassTypeInfoArray = new TypeInfo[length];
         for (int index = 0; index < length; index++) {
@@ -93,18 +83,7 @@ public class ClassInfo extends TypeInfo {
     }
 
     private ObjectInfo[] toClassLoaderClassInfo(final Class<?> clazz) {
-        final List<ClassLoader> classLoaderList = new ArrayList<ClassLoader>();
-        ClassLoader loader = clazz.getClassLoader();
-        if (null != loader) {
-            classLoaderList.add(loader);
-            while (true) {
-                loader = loader.getParent();
-                if (null == loader) {
-                    break;
-                }
-                classLoaderList.add(loader);
-            }
-        }
+        final List<ClassLoader> classLoaderList = GaReflectUtils.recGetClassLoader(clazz);
         final int length = classLoaderList.size();
         final ObjectInfo[] classLoaderObjectInfoArray = new ObjectInfo[length];
         for (int index = 0; index < length; index++) {
