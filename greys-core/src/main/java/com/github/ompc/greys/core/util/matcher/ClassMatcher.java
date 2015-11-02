@@ -23,10 +23,10 @@ public class ClassMatcher extends ReflectMatcher<Class<?>> {
      * @param annotations 直接修饰类的Annotation匹配器
      */
     public ClassMatcher(
-            int modifier,
-            int type,
-            Matcher<String> name,
-            Collection<Matcher<Class<? extends Annotation>>> annotations) {
+            final int modifier,
+            final int type,
+            final Matcher<String> name,
+            final Collection<Matcher<Class<? extends Annotation>>> annotations) {
         super(modifier, name, annotations);
         this.type = type;
     }

@@ -1,14 +1,15 @@
 package com.github.ompc.greys.core.manager.impl;
 
+import com.github.ompc.greys.core.GaMethod;
 import com.github.ompc.greys.core.manager.ReflectManager;
 import com.github.ompc.greys.core.util.GaReflectUtils;
 import com.github.ompc.greys.core.util.matcher.Matcher;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * 默认反射操作管理类实现
@@ -23,8 +24,8 @@ public class DefaultReflectManager implements ReflectManager {
     }
 
     @Override
-    public LinkedHashSet<Class<?>> searchClass(final Matcher<Class<?>> classMatcher) {
-        final LinkedHashSet<Class<?>> classSet = new LinkedHashSet<Class<?>>();
+    public Collection<Class<?>> searchClass(final Matcher<Class<?>> classMatcher) {
+        final Set<Class<?>> classSet = new LinkedHashSet<Class<?>>();
         for (Class<?> clazz : classDataSource.allLoadedClasses()) {
             if (classMatcher.matching(clazz)) {
                 classSet.add(clazz);
@@ -34,8 +35,8 @@ public class DefaultReflectManager implements ReflectManager {
     }
 
     @Override
-    public LinkedHashSet<Class<?>> searchSubClass(final Class<?> targetClass) {
-        final LinkedHashSet<Class<?>> classSet = new LinkedHashSet<Class<?>>();
+    public Collection<Class<?>> searchSubClass(final Class<?> targetClass) {
+        final Set<Class<?>> classSet = new LinkedHashSet<Class<?>>();
         for (Class<?> clazz : classDataSource.allLoadedClasses()) {
             if (clazz.isAssignableFrom(targetClass)) {
                 classSet.add(clazz);
@@ -52,8 +53,8 @@ public class DefaultReflectManager implements ReflectManager {
      * @param clazz 目标类
      * @return 类的所有可见方法
      */
-    private LinkedHashSet<Method> listVisualMethod(final Class<?> clazz) {
-        final LinkedHashSet<Method> methodSet = new LinkedHashSet<Method>();
+    private Set<Method> listVisualMethod(final Class<?> clazz) {
+        final Set<Method> methodSet = new LinkedHashSet<Method>();
 
         // 首先查出当前类所声明的所有方法
         final Method[] classDeclaredMethodArray = clazz.getDeclaredMethods();
@@ -64,7 +65,7 @@ public class DefaultReflectManager implements ReflectManager {
         }
 
         // 查出当前类所有的父类
-        final ArrayList<Class<?>> superClassSet = GaReflectUtils.recGetSuperClass(clazz);
+        final Collection<Class<?>> superClassSet = GaReflectUtils.recGetSuperClass(clazz);
 
         // 查出所有父类的可见方法
         for (Class<?> superClass : superClassSet) {
@@ -99,16 +100,19 @@ public class DefaultReflectManager implements ReflectManager {
     }
 
     @Override
-    public LinkedHashSet<Method> searchClassMethods(Class<?> targetClass, Matcher<Method> methodMatcher) {
-        final LinkedHashSet<Method> visualMethodSet = listVisualMethod(targetClass);
-        final Iterator<Method> methodIt = visualMethodSet.iterator();
-        while (methodIt.hasNext()) {
-            final Method method = methodIt.next();
-            if (!methodMatcher.matching(method)) {
-                methodIt.remove();
+    public Collection<GaMethod> searchClassGaMethods(Class<?> targetClass, Matcher<GaMethod> gaMethodMatcher) {
+
+        final Set<Method> visualMethodSet = listVisualMethod(targetClass);
+        final Set<GaMethod> gaMethodSet = new LinkedHashSet<GaMethod>();
+
+        for (final Method method : visualMethodSet) {
+            final GaMethod gaMethod = new GaMethod.MethodImpl(method);
+            if (gaMethodMatcher.matching(gaMethod)) {
+                gaMethodSet.add(gaMethod);
             }
         }
-        return visualMethodSet;
+
+        return gaMethodSet;
     }
 
 }

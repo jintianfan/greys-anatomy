@@ -1,4 +1,7 @@
-{"id": 0, "type": "search-class", "body": {"classes-matching": [{"modifier": 3583, "type": 511, "class-name-matching": {"pattern": "com.alibaba.*", "type": 0}, "is-include-sub-classes": false}]}}
+{"id": 0,"type": "search-class","body": {"class-matching":{"modifier": 3583,"type": 511,"name": {"pattern": "com.alibaba.*","type": 0}}}}
+{"id": 0,"type": "search-method","body": {"class-matching":{"modifier": 3583,"type": 511,"name": {"pattern": "com.alibaba.Address","type": 0}}}}
+
+
 
 {"id": 0, "type": "get-version", "body": {}}
 

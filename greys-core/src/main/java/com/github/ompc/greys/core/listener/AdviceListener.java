@@ -1,5 +1,6 @@
 package com.github.ompc.greys.core.listener;
 
+import com.github.ompc.greys.core.GaMethod;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.Type;
 
@@ -89,9 +90,9 @@ public abstract class AdviceListener implements InvokeListener {
 
         // to method or constructor
         if (StringUtils.equals(methodName, "<init>")) {
-            return GaMethod.newConstructor(toConstructor(clazz, argsClasses));
+            return new GaMethod.ConstructorImpl(toConstructor(clazz, argsClasses));
         } else {
-            return GaMethod.newMethod(toMethod(clazz, methodName, argsClasses));
+            return new GaMethod.MethodImpl(toMethod(clazz, methodName, argsClasses));
         }
     }
 

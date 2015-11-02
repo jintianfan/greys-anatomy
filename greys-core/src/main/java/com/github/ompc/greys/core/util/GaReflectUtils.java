@@ -1,6 +1,7 @@
 package com.github.ompc.greys.core.util;
 
-import java.lang.reflect.Method;
+import com.github.ompc.greys.core.GaMethod;
+
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
@@ -124,7 +125,7 @@ public class GaReflectUtils {
      * @param targetMethod 目标方法
      * @return 方法修饰符
      */
-    public static int computeMethodModifier(Method targetMethod) {
+    public static int computeGaMethodModifier(GaMethod targetMethod) {
         return targetMethod.getModifiers();
     }
 

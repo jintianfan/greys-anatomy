@@ -1,5 +1,7 @@
 package com.github.ompc.greys.core.listener;
 
+import com.github.ompc.greys.core.GaMethod;
+
 /**
  * 通知点
  * Created by vlinux on 15/10/24.

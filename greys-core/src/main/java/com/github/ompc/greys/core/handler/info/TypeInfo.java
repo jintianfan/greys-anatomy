@@ -20,7 +20,7 @@ public class TypeInfo {
 
         this.name = clazz.getName();
         this.codeSource = getCodeSource(clazz);
-        this.modifier = clazz.getModifiers();
+        this.modifier = GaReflectUtils.computeClassModifier(clazz);
         this.type = GaReflectUtils.computeClassType(clazz);
 
     }

@@ -28,7 +28,8 @@ public class DefaultHandlerMetaDataManager implements HandlerMetaDataManager {
                         filterByParentClass(
                                 scanPackage(
                                         getClass().getClassLoader(),
-                                        "com.github.ompc.greys.core.handler"),
+                                        "com.github.ompc.greys.core.handler.impl"
+                                ),
                                 Handler.class
                         ),
                         Type.class

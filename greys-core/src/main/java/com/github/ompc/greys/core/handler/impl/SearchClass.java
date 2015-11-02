@@ -6,22 +6,16 @@ import com.github.ompc.greys.core.handler.Type;
 import com.github.ompc.greys.core.handler.info.ClassInfo;
 import com.github.ompc.greys.core.handler.matching.ClassMatching;
 import com.github.ompc.greys.core.listener.InvokeListener;
-import com.github.ompc.greys.core.manager.ReflectManager;
 import com.github.ompc.greys.core.server.Session;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 搜索已加载类
  * Created by vlinux on 15/11/2.
  */
 @Type("search-class")
-public class SearchClass implements Handler<SearchClass.Req, SearchClass.Resp> {
-
-    private final ReflectManager reflectManager = ReflectManager.Factory.getInstance();
+public class SearchClass extends MatchingSupport implements Handler<SearchClass.Req, SearchClass.Resp> {
 
     @Override
     public void init(int id, Session session) throws Throwable {
@@ -38,13 +32,13 @@ public class SearchClass implements Handler<SearchClass.Req, SearchClass.Resp> {
     public LinkedHashMap<InvokeListener, ArrayList<PointCut>> handle(Req req, Out<Resp> out) throws Throwable {
 
         final Resp resp = new Resp();
-        resp.classInfos = toClassInfos(searchClasses(req.classesMatching, req), req);
+        resp.classInfos = toClassInfos(matchingClasses(req.classMatching, req.isIncludeSubClasses), req);
         out.finish(resp);
 
         return null;
     }
 
-    private ClassInfo[] toClassInfos(final Set<Class<?>> classSet, final Req req) {
+    private Collection<ClassInfo> toClassInfos(final Collection<Class<?>> classSet, final Req req) {
 
         final Set<ClassInfo> classInfoSet = new LinkedHashSet<ClassInfo>();
         for (Class<?> clazz : classSet) {
@@ -58,38 +52,13 @@ public class SearchClass implements Handler<SearchClass.Req, SearchClass.Resp> {
             ));
         }
 
-        return classInfoSet.toArray(new ClassInfo[0]);
-    }
-
-    private Set<Class<?>> searchClasses(final ClassMatching[] classesMatching, final Req req) {
-        final Set<Class<?>> classSet = new LinkedHashSet<Class<?>>();
-        if (null == classesMatching) {
-            return classSet;
-        }
-
-        // 搜索所有匹配器需求
-        for (final ClassMatching classMatching : classesMatching) {
-
-            // 搜索当前匹配器所匹配的类
-            final Set<Class<?>> matchedClassSet = reflectManager.searchClass(classMatching.toMatcher());
-            classSet.addAll(matchedClassSet);
-
-            // 如果要求搜索子类，则需要继续添加
-            if (req.isIncludeSubClasses) {
-                for (final Class<?> matchedClass : matchedClassSet) {
-                    classSet.addAll(reflectManager.searchSubClass(matchedClass));
-                }
-            }
-
-        }
-
-        return classSet;
+        return classInfoSet;
     }
 
     public static class Req extends Handler.Req {
 
         // 类匹配集合
-        private ClassMatching[] classesMatching;
+        private ClassMatching classMatching;
 
         // 是否包含子类
         private boolean isIncludeSubClasses;
@@ -114,7 +83,7 @@ public class SearchClass implements Handler<SearchClass.Req, SearchClass.Resp> {
     public static class Resp extends Handler.Resp {
 
         // 匹配类信息
-        private ClassInfo[] classInfos;
+        private Collection<ClassInfo> classInfos;
 
     }
 
