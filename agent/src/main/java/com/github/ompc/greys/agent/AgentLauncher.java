@@ -114,8 +114,14 @@ public class AgentLauncher {
             final String agentArgs = args.substring(index, args.length());
 
             // 将Spy添加到BootstrapClassLoader
+			//modified Resin自带的classpath会把URL的file: file:/home/ewallet/.greys/lib/1.7.3.2/greys/greys-agent.jar!/com/github/ompc/greys/agent/AgentLauncher.class 
+			String path=AgentLauncher.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+			if(path.contains("!"))
+			{
+				path=path.substring(5,path.indexOf("!"));
+			}
             inst.appendToBootstrapClassLoaderSearch(
-                    new JarFile(AgentLauncher.class.getProtectionDomain().getCodeSource().getLocation().getFile())
+                    new JarFile(path)
             );
 
             // 构造自定义的类加载器，尽量减少Greys对现有工程的侵蚀
